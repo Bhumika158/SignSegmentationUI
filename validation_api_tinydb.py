@@ -25,7 +25,13 @@ app = FastAPI(title="Sign Segmentation Validator API - TinyDB")
 
 # Enable CORS for frontend
 import os
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",") if os.getenv("CORS_ORIGINS") else ["*"]
+# Default allowed origins (add your static site URL)
+default_origins = [
+    "https://signsegmentationui-static.onrender.com",
+    "http://localhost:8000",
+    "http://localhost:8001"
+]
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", ",".join(default_origins)).split(",") if os.getenv("CORS_ORIGINS") else default_origins
 
 app.add_middleware(
     CORSMiddleware,

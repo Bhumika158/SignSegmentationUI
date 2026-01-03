@@ -16,7 +16,8 @@ data/validation_database*.json
 /tmp/validation_database*.json
 
 # Configuration (contains API URLs)
-config.js
+# Note: config.js is now committed for deployment
+# config.js
 
 # IDE
 .vscode/

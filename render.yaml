@@ -17,3 +17,5 @@ services:
     env: static
     buildCommand: echo "No build needed"
     staticPublishPath: .
+    # Ensure index.html and segmentation_validator.html are in root
+    # If files are in subdirectory, change staticPublishPath accordingly
