@@ -1,0 +1,1646 @@
+{
+  "annotations": [
+    {
+      "video_id": "My_Name_Is",
+      "sign_segments": [
+        {
+          "start": 21,
+          "end": 30,
+          "label": "My",
+          "type": "atomic"
+        },
+        {
+          "start": 37,
+          "end": 60,
+          "label": "Name",
+          "type": "atomic"
+        }
+      ],
+      "notes": "First sign is 'My', second is 'Name'"
+    },
+    {
+      "video_id": "Good_Morning",
+      "sign_segments": [
+        {
+          "start": 26,
+          "end": 34,
+          "label": "Good",
+          "type": "atomic"
+        },
+        {
+          "start": 37,
+          "end": 61,
+          "label": "Morning",
+          "type": "atomic"
+        }
+      ],
+      "notes": "'Good' is hand moving up (OK sign), 'Morning' is hand opening (rising sun)"
+    },
+    {
+      "video_id": "1_One",
+      "sign_segments": [
+        {
+          "start": 18,
+          "end": 35,
+          "label": "One",
+          "type": "atomic"
+        }
+      ],
+      "notes": "The complete sign was 1, but there was some time where landmarks were not detected well and retraction was considered as signing phase (e.g., between 36 to 39). Corrected to frames 18-35 to exclude retraction."
+    },
+    {
+      "video_id": "2_Two",
+      "sign_segments": [
+        {
+          "start": 5,
+          "end": 28,
+          "label": "Two",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Complete sign from 5-28 was 2, but in between landmarks were not detected well, and between 29-32, its retraction phase."
+    },
+    {
+      "video_id": "3_Three",
+      "sign_segments": [
+        {
+          "start": 28,
+          "end": 50,
+          "label": "Three",
+          "type": "atomic"
+        }
+      ],
+      "notes": "23-27 signs are about to start and landmarks were not identified well, 51-58, its retractionn phase."
+    },
+    {
+      "video_id": "3G",
+      "sign_segments": [
+        {
+          "start": 16,
+          "end": 23,
+          "label": "Three",
+          "type": "atomic"
+        },
+        {
+          "start": 31,
+          "end": 45,
+          "label": "G",
+          "type": "atomic"
+        }
+      ],
+      "notes": "few places landmarks detection was missed."
+    },
+    {
+      "video_id": "4_Four",
+      "sign_segments": [
+        {
+          "start": 43,
+          "end": 68,
+          "label": "Four",
+          "type": "atomic"
+        }
+      ],
+      "notes": "teh start and end segment identified have idle or null frames"
+    },
+    {
+      "video_id": "4G",
+      "sign_segments": [
+        {
+          "start": 20,
+          "end": 24,
+          "label": "Four",
+          "type": "atomic"
+        },
+        {
+          "start": 26,
+          "end": 50,
+          "label": "G",
+          "type": "atomic"
+        }
+      ],
+      "notes": "25th frame is for sign change, and post 50th frane is retraction to idle stage."
+    },
+    {
+      "video_id": "5_Five",
+      "sign_segments": [
+        {
+          "start": 23,
+          "end": 56,
+          "label": "Five",
+          "type": "atomic"
+        }
+      ],
+      "notes": "22nd frame was sign start stage, and port 56th frame, its retraction and back to idle state."
+    },
+    {
+      "video_id": "5G",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 31,
+          "label": "Five",
+          "type": "atomic"
+        },
+        {
+          "start": 34,
+          "end": 54,
+          "label": "G",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "6_Six",
+      "sign_segments": [
+        {
+          "start": 9,
+          "end": 37,
+          "label": "Six",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Six is signed by making a number 6 from little finger, many landmarks were missed, restraction phase was identified wrong, leading to wrong sign phase identification"
+    },
+    {
+      "video_id": "7_Seven",
+      "sign_segments": [
+        {
+          "start": 17,
+          "end": 50,
+          "label": "Seven",
+          "type": "atomic"
+        }
+      ],
+      "notes": "all frames between 17-50 is seven, rest is retraction phase."
+    },
+    {
+      "video_id": "8_Eight",
+      "sign_segments": [
+        {
+          "start": 25,
+          "end": 60,
+          "label": "Eight",
+          "type": "atomic"
+        }
+      ],
+      "notes": "all frames though some landmarks were missed between 25-60 shows Eight, rest is retraction phase."
+    },
+    {
+      "video_id": "9_Nine",
+      "sign_segments": [
+        {
+          "start": 25,
+          "end": 54,
+          "label": "Nine",
+          "type": "atomic"
+        }
+      ],
+      "notes": "before 25th frame, sign is starting and after 54th frame, restraction is tstarting"
+    },
+    {
+      "video_id": "10_Ten",
+      "sign_segments": [
+        {
+          "start": 12,
+          "end": 23,
+          "label": "One",
+          "type": "atomic"
+        },
+        {
+          "start": 27,
+          "end": 41,
+          "label": "Zero",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Before 12th frame, sigh was starting, between 24-26, there was transition to second sign of Zero, and then post 41st frame,it was retraction."
+    },
+    {
+      "video_id": "11_Eleven",
+      "sign_segments": [
+        {
+          "start": 22,
+          "end": 48,
+          "label": "Eleven",
+          "type": "composite",
+          "components": [
+            {
+              "start": 22,
+              "end": 34,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 35,
+              "end": 48,
+              "label": "One",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Eleven is shown by making \"One\" twice, together it makes Eleven"
+    },
+    {
+      "video_id": "12_Twelve",
+      "sign_segments": [
+        {
+          "start": 21,
+          "end": 42,
+          "label": "Twelve",
+          "type": "composite",
+          "components": [
+            {
+              "start": 21,
+              "end": 30,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 31,
+              "end": 42,
+              "label": "Two",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Twelve is shown by showing \"One\" and then \"Two\", together making Twelve."
+    },
+    {
+      "video_id": "13_Thirteen",
+      "sign_segments": [
+        {
+          "start": 23,
+          "end": 53,
+          "label": "Thirteen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 23,
+              "end": 34,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 36,
+              "end": 53,
+              "label": "Three",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Thirteen is shown by makingg \"One\" and then \"Three\" one after another."
+    },
+    {
+      "video_id": "14_Fourteen",
+      "sign_segments": [
+        {
+          "start": 42,
+          "end": 66,
+          "label": "Fourteen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 42,
+              "end": 52,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 54,
+              "end": 66,
+              "label": "Four",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Fourteen is formed by making \"One\" and then \"Four\" one after another, though some landmarks were missed while making One starting 42nd frame, still before 42ns frame, it was start for \"One\" sign and after 66th frame, it was retraction/back to idle state."
+    },
+    {
+      "video_id": "15_Fifteen",
+      "sign_segments": [
+        {
+          "start": 52,
+          "end": 78,
+          "label": "Fifteen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 52,
+              "end": 61,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 65,
+              "end": 78,
+              "label": "Five",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Fifteen is formed by making \"One\" and then \"Five\" one after another."
+    },
+    {
+      "video_id": "16_Sixteen",
+      "sign_segments": [
+        {
+          "start": 22,
+          "end": 55,
+          "label": "Sixteen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 22,
+              "end": 28,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 32,
+              "end": 55,
+              "label": "Six",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Sixteen is formed by making \"One\" and then \"Six\" one after another, though between 22-55, few landmarks were missed, but if captured forms One and Six together forming Sixteen, before and after 22 and 55, its sign start and retraction phase respectively."
+    },
+    {
+      "video_id": "17_Seventeen",
+      "sign_segments": [
+        {
+          "start": 21,
+          "end": 59,
+          "label": "Seventeen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 21,
+              "end": 33,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 37,
+              "end": 59,
+              "label": "Seven",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Seventeen is formed by showing \"One\" and then \"Seven\" one after another."
+    },
+    {
+      "video_id": "18_Eighteen",
+      "sign_segments": [
+        {
+          "start": 34,
+          "end": 69,
+          "label": "Eighteen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 34,
+              "end": 46,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 52,
+              "end": 69,
+              "label": "Eight",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Eighteen: Eighteen is formed by making \"One\" and then \"Eight\" one after another."
+    },
+    {
+      "video_id": "19_Nineteen",
+      "sign_segments": [
+        {
+          "start": 25,
+          "end": 58,
+          "label": "Nineteen",
+          "type": "composite",
+          "components": [
+            {
+              "start": 25,
+              "end": 36,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 40,
+              "end": 58,
+              "label": "Nine",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Nineteen: Nineteen is shown by making \"One\" and then \"Nine\" one after another."
+    },
+    {
+      "video_id": "20_Twenty",
+      "sign_segments": [
+        {
+          "start": 27,
+          "end": 55,
+          "label": "Twenty",
+          "type": "composite",
+          "components": [
+            {
+              "start": 27,
+              "end": 38,
+              "label": "Two",
+              "estimated": false
+            },
+            {
+              "start": 45,
+              "end": 55,
+              "label": "Zero",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Twenty: Twenty is shown by making \"Two\" and then \"Zero\""
+    },
+    {
+      "video_id": "21_Twenty_One",
+      "sign_segments": [
+        {
+          "start": 44,
+          "end": 85,
+          "label": "Twenty-One",
+          "type": "composite",
+          "components": [
+            {
+              "start": 44,
+              "end": 57,
+              "label": "Two",
+              "estimated": false
+            },
+            {
+              "start": 62,
+              "end": 85,
+              "label": "One",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Twenty-One: Twenty One is shown by making \"Two\" and then \"One\" one after another."
+    },
+    {
+      "video_id": "30_Thirty",
+      "sign_segments": [
+        {
+          "start": 52,
+          "end": 86,
+          "label": "Thirty",
+          "type": "composite"
+        }
+      ],
+      "notes": "Thirty: Thirty is formed by making 3 and tapping the first finger with thump three times."
+    },
+    {
+      "video_id": "50_Fifty",
+      "sign_segments": [
+        {
+          "start": 27,
+          "end": 52,
+          "label": "Fifty",
+          "type": "composite",
+          "components": [
+            {
+              "start": 27,
+              "end": 39,
+              "label": "Five",
+              "estimated": false
+            },
+            {
+              "start": 44,
+              "end": 52,
+              "label": "Zero",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Fifty: Fifty is formed by making \"Five\" and then \"Zero\""
+    },
+    {
+      "video_id": "60_Sixty",
+      "sign_segments": [
+        {
+          "start": 29,
+          "end": 75,
+          "label": "Sixty",
+          "type": "composite",
+          "components": [
+            {
+              "start": 29,
+              "end": 41,
+              "label": "Six",
+              "estimated": false
+            },
+            {
+              "start": 53,
+              "end": 75,
+              "label": "Zero",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Sixty: Sixty is formed by making \"Six\" and then \"Zero\" one after another"
+    },
+    {
+      "video_id": "70_Seventy",
+      "sign_segments": [
+        {
+          "start": 35,
+          "end": 50,
+          "label": "Seventy",
+          "type": "composite",
+          "components": [
+            {
+              "start": 35,
+              "end": 38,
+              "label": "Seven",
+              "estimated": false
+            },
+            {
+              "start": 42,
+              "end": 50,
+              "label": "Zero",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Seventy: Seventy is formed by making \"Seven\" and then \"Zero\" one after another."
+    },
+    {
+      "video_id": "100_Hundred",
+      "sign_segments": [
+        {
+          "start": 27,
+          "end": 57,
+          "label": "Hundred",
+          "type": "composite",
+          "components": [
+            {
+              "start": 27,
+              "end": 36,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 37,
+              "end": 40,
+              "label": "Zero",
+              "estimated": false
+            },
+            {
+              "start": 43,
+              "end": 57,
+              "label": "Zero",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Hundred: Hundred is formed by making \"One\" followed with \"Zero\" and \"Zero\""
+    },
+    {
+      "video_id": "500_Five_Hundred",
+      "sign_segments": [
+        {
+          "start": 17,
+          "end": 50,
+          "label": "Five-Hundred",
+          "type": "composite",
+          "components": [
+            {
+              "start": 17,
+              "end": 31,
+              "label": "Five",
+              "estimated": false
+            },
+            {
+              "start": 32,
+              "end": 35,
+              "label": "Zero",
+              "estimated": false
+            },
+            {
+              "start": 37,
+              "end": 50,
+              "label": "Zero",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Five-Hundred: Five Hundred is combination for \"Five\" , \"Zero\" and \"Zero\" one after another."
+    },
+    {
+      "video_id": "1000_Thousand",
+      "sign_segments": [
+        {
+          "start": 50,
+          "end": 78,
+          "label": "Thousand",
+          "type": "composite",
+          "components": [
+            {
+              "start": 50,
+              "end": 58,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 62,
+              "end": 78,
+              "label": "000",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Thousand: Thousand is combination of \"One\" with a flattened Three fingers showing \"Three Zeroes\" one after another."
+    },
+    {
+      "video_id": "2000_Two_Thousand",
+      "sign_segments": [
+        {
+          "start": 48,
+          "end": 81,
+          "label": "Two-Thousand",
+          "type": "composite",
+          "components": [
+            {
+              "start": 48,
+              "end": 57,
+              "label": "Two",
+              "estimated": false
+            },
+            {
+              "start": 61,
+              "end": 81,
+              "label": "000",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Two-Thousand: Two-Thousand is shown by making \"Two\" and then flattened three fingers showing \"Three Zeroes\" one after another."
+    },
+    {
+      "video_id": "10000_Ten_Thousand",
+      "sign_segments": [
+        {
+          "start": 45,
+          "end": 93,
+          "label": "Ten-Thousand",
+          "type": "composite",
+          "components": [
+            {
+              "start": 45,
+              "end": 58,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 59,
+              "end": 62,
+              "label": "Zero",
+              "estimated": false
+            },
+            {
+              "start": 63,
+              "end": 93,
+              "label": "000",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Ten-Thousand: Ten-Thousand is shown by \"One\", \"Zero\" and flattened Three showing \"Three zeroes\" one after another to make 10K"
+    },
+    {
+      "video_id": "100000_One_Lakh",
+      "sign_segments": [
+        {
+          "start": 28,
+          "end": 63,
+          "label": "One-Lakh",
+          "type": "composite",
+          "components": [
+            {
+              "start": 28,
+              "end": 37,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 39,
+              "end": 63,
+              "label": "dragging letter 'L' from right to Left",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "One-Lakh: OneLakh is shown by \"One\" and \"L\" dragging from right to Left one after another."
+    },
+    {
+      "video_id": "10000000_One_Crore",
+      "sign_segments": [
+        {
+          "start": 29,
+          "end": 67,
+          "label": "One Crore",
+          "type": "composite",
+          "components": [
+            {
+              "start": 29,
+              "end": 35,
+              "label": "One",
+              "estimated": false
+            },
+            {
+              "start": 39,
+              "end": 67,
+              "label": "dragging letter 'C' from right to Left",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "One Crore is formed by \"One\" and letter \"C\" dragging from right to Left one after another.: One Crore is formed by \"One\" and letter \"C\" dragging from right to Left one after another."
+    },
+    {
+      "video_id": "Allahabad_Bank",
+      "sign_segments": [
+        {
+          "start": 29,
+          "end": 75,
+          "label": "Allahabad Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 29,
+              "end": 35,
+              "label": "A",
+              "estimated": false
+            },
+            {
+              "start": 39,
+              "end": 41,
+              "label": "L",
+              "estimated": false
+            },
+            {
+              "start": 44,
+              "end": 48,
+              "label": "L",
+              "estimated": false
+            },
+            {
+              "start": 51,
+              "end": 75,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Allahabad Bank: Allahabad Bank is shown using letter \"A\", \"L\", \"L\" followed with sign for \"Bank\" one after another"
+    },
+    {
+      "video_id": "Bank_Account_Number",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 70,
+          "label": "Bank Account Number",
+          "type": "composite",
+          "components": [
+            {
+              "start": 19,
+              "end": 27,
+              "label": "Bank",
+              "estimated": false
+            },
+            {
+              "start": 30,
+              "end": 44,
+              "label": "Account",
+              "estimated": false
+            },
+            {
+              "start": 46,
+              "end": 70,
+              "label": "Number",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Bank Account Number: Its combination of sign for \"Bank\", \"Account\" and \"Number\" one after another"
+    },
+    {
+      "video_id": "Bank",
+      "sign_segments": [
+        {
+          "start": 35,
+          "end": 70,
+          "label": "Bank",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Bank: landmarks from one of the hand was missed."
+    },
+    {
+      "video_id": "Bank_of_Baroda",
+      "sign_segments": [
+        {
+          "start": 30,
+          "end": 81,
+          "label": "Bank of Baroda",
+          "type": "composite",
+          "components": [
+            {
+              "start": 30,
+              "end": 51,
+              "label": "Baroda",
+              "estimated": false
+            },
+            {
+              "start": 55,
+              "end": 81,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Bank of Baroda: it is shown using sign for \"Baroda\" and then \"Bank\" one after another."
+    },
+    {
+      "video_id": "Bank_of_Maharashtra",
+      "sign_segments": [
+        {
+          "start": 15,
+          "end": 60,
+          "label": "Maharastra Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 15,
+              "end": 31,
+              "label": "Maharastra",
+              "estimated": false
+            },
+            {
+              "start": 36,
+              "end": 60,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Beautiful",
+      "sign_segments": [
+        {
+          "start": 11,
+          "end": 43,
+          "label": "Beautiful",
+          "type": "composite",
+          "components": [
+            {
+              "start": 11,
+              "end": 23,
+              "label": "Face",
+              "estimated": false
+            },
+            {
+              "start": 25,
+              "end": 43,
+              "label": "Nice",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Beautiful: Expression shown by telling your face is nice, so signs for \"Face\" and \"Nice\" is done one after another."
+    },
+    {
+      "video_id": "Bottle",
+      "sign_segments": [
+        {
+          "start": 35,
+          "end": 81,
+          "label": "Bottle",
+          "type": "composite",
+          "components": [
+            {
+              "start": 35,
+              "end": 41,
+              "label": "Water",
+              "estimated": false
+            },
+            {
+              "start": 42,
+              "end": 48,
+              "label": "Bottle",
+              "estimated": false
+            },
+            {
+              "start": 53,
+              "end": 81,
+              "label": "Cap",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Bottle: Bottle is shown by signing for \"water\",\"Bottle\" and then \"Cap\" one after another"
+    },
+    {
+      "video_id": "Bye_Goodbye",
+      "sign_segments": [
+        {
+          "start": 29,
+          "end": 64,
+          "label": "Bye/GoodBye",
+          "type": "composite"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Canara_Bank",
+      "sign_segments": [
+        {
+          "start": 22,
+          "end": 95,
+          "label": "Canara Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 22,
+              "end": 29,
+              "label": "C",
+              "estimated": false
+            },
+            {
+              "start": 32,
+              "end": 38,
+              "label": "A",
+              "estimated": false
+            },
+            {
+              "start": 42,
+              "end": 47,
+              "label": "N",
+              "estimated": false
+            },
+            {
+              "start": 48,
+              "end": 53,
+              "label": "A",
+              "estimated": false
+            },
+            {
+              "start": 55,
+              "end": 61,
+              "label": "R",
+              "estimated": false
+            },
+            {
+              "start": 63,
+              "end": 67,
+              "label": "A",
+              "estimated": false
+            },
+            {
+              "start": 70,
+              "end": 95,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Canara Bank: Signs for each letter in Canara is signed followed with sign for Bank"
+    },
+    {
+      "video_id": "Corporation_Bank",
+      "sign_segments": [
+        {
+          "start": 15,
+          "end": 60,
+          "label": "Corporation Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 15,
+              "end": 33,
+              "label": "Corporation",
+              "estimated": false
+            },
+            {
+              "start": 35,
+              "end": 60,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Corporation Bank: Signed for \"Corportation\" and \"Bank\""
+    },
+    {
+      "video_id": "Day",
+      "sign_segments": [
+        {
+          "start": 33,
+          "end": 67,
+          "label": "Day",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Day: Few landmarks were missed in between"
+    },
+    {
+      "video_id": "Dream",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 55,
+          "label": "Dream",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Face",
+      "sign_segments": [
+        {
+          "start": 52,
+          "end": 95,
+          "label": "Face",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Full",
+      "sign_segments": [
+        {
+          "start": 20,
+          "end": 48,
+          "label": "Full",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Full_Time",
+      "sign_segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "label": "Full Time",
+          "type": "composite",
+          "components": [
+            {
+              "start": 18,
+              "end": 26,
+              "label": "Full",
+              "estimated": false
+            },
+            {
+              "start": 29,
+              "end": 53,
+              "label": "Time",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Full Time: Combination for \"Full\" and \"Time\""
+    },
+    {
+      "video_id": "Good_Afternoon",
+      "sign_segments": [
+        {
+          "start": 20,
+          "end": 57,
+          "label": "Good Afternoon",
+          "type": "composite",
+          "components": [
+            {
+              "start": 20,
+              "end": 30,
+              "label": "Good",
+              "estimated": false
+            },
+            {
+              "start": 33,
+              "end": 57,
+              "label": "Afternoon",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Good Afternoon: Combination for sign of \"Good\" and \"Afternoon\""
+    },
+    {
+      "video_id": "Good",
+      "sign_segments": [
+        {
+          "start": 12,
+          "end": 51,
+          "label": "Good",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Good_Evening",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 61,
+          "label": "Good Evening",
+          "type": "composite",
+          "components": [
+            {
+              "start": 19,
+              "end": 27,
+              "label": "Good",
+              "estimated": false
+            },
+            {
+              "start": 28,
+              "end": 61,
+              "label": "Evening",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Good Evening: Combination for sign for \"Good\" and \"Evening\""
+    },
+    {
+      "video_id": "Good_Night",
+      "sign_segments": [
+        {
+          "start": 21,
+          "end": 62,
+          "label": "Good Night",
+          "type": "composite",
+          "components": [
+            {
+              "start": 21,
+              "end": 29,
+              "label": "Good",
+              "estimated": false
+            },
+            {
+              "start": 32,
+              "end": 62,
+              "label": "Night",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Good Night: Combination for \"Good\" and \"Night\""
+    },
+    {
+      "video_id": "Happy",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 40,
+          "label": "Happy",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Hdfc_Bank",
+      "sign_segments": [
+        {
+          "start": 32,
+          "end": 103,
+          "label": "HDFC Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 32,
+              "end": 44,
+              "label": "H",
+              "estimated": false
+            },
+            {
+              "start": 45,
+              "end": 53,
+              "label": "D",
+              "estimated": false
+            },
+            {
+              "start": 57,
+              "end": 66,
+              "label": "F",
+              "estimated": false
+            },
+            {
+              "start": 68,
+              "end": 76,
+              "label": "C",
+              "estimated": false
+            },
+            {
+              "start": 80,
+              "end": 103,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "HDFC Bank: Each letter for HDFC is signed one after another followed with Bank"
+    },
+    {
+      "video_id": "hello",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 46,
+          "label": "Hello",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Hill",
+      "sign_segments": [
+        {
+          "start": 56,
+          "end": 99,
+          "label": "Hill",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Hill: multiple landmarks were missed."
+    },
+    {
+      "video_id": "HSBC_Bank",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 88,
+          "label": "HSBC Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 19,
+              "end": 33,
+              "label": "H",
+              "estimated": false
+            },
+            {
+              "start": 34,
+              "end": 43,
+              "label": "S",
+              "estimated": false
+            },
+            {
+              "start": 44,
+              "end": 52,
+              "label": "B",
+              "estimated": false
+            },
+            {
+              "start": 53,
+              "end": 63,
+              "label": "C",
+              "estimated": false
+            },
+            {
+              "start": 67,
+              "end": 88,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "HSBC Bank: Each letter of HSBC is signed one after another followed with Bank"
+    },
+    {
+      "video_id": "ICICI_Bank",
+      "sign_segments": [
+        {
+          "start": 27,
+          "end": 87,
+          "label": "ICICI Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 27,
+              "end": 33,
+              "label": "I",
+              "estimated": false
+            },
+            {
+              "start": 34,
+              "end": 40,
+              "label": "C",
+              "estimated": false
+            },
+            {
+              "start": 41,
+              "end": 48,
+              "label": "I",
+              "estimated": false
+            },
+            {
+              "start": 49,
+              "end": 55,
+              "label": "C",
+              "estimated": false
+            },
+            {
+              "start": 57,
+              "end": 63,
+              "label": "I",
+              "estimated": false
+            },
+            {
+              "start": 65,
+              "end": 87,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "ICICI Bank: each letter in ICICI is signed followed with sign for Bank"
+    },
+    {
+      "video_id": "IDBI_Bank",
+      "sign_segments": [
+        {
+          "start": 24,
+          "end": 95,
+          "label": "IDBI Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 24,
+              "end": 34,
+              "label": "I",
+              "estimated": false
+            },
+            {
+              "start": 35,
+              "end": 44,
+              "label": "D",
+              "estimated": false
+            },
+            {
+              "start": 45,
+              "end": 53,
+              "label": "B",
+              "estimated": false
+            },
+            {
+              "start": 54,
+              "end": 69,
+              "label": "I",
+              "estimated": false
+            },
+            {
+              "start": 72,
+              "end": 95,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "IDBI Bank: Each letter in IDBI bank will be signed followed by sign for bank."
+    },
+    {
+      "video_id": "IDFC_Bank",
+      "sign_segments": [
+        {
+          "start": 26,
+          "end": 94,
+          "label": "IDFC Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 26,
+              "end": 33,
+              "label": "I",
+              "estimated": false
+            },
+            {
+              "start": 35,
+              "end": 44,
+              "label": "D",
+              "estimated": false
+            },
+            {
+              "start": 46,
+              "end": 55,
+              "label": "F",
+              "estimated": false
+            },
+            {
+              "start": 56,
+              "end": 65,
+              "label": "C",
+              "estimated": false
+            },
+            {
+              "start": 70,
+              "end": 94,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "IDFC Bank: Each letter in IDFC is signed followed with Bank"
+    },
+    {
+      "video_id": "J&k_Bank",
+      "sign_segments": [
+        {
+          "start": 19,
+          "end": 72,
+          "label": "J&K Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 19,
+              "end": 30,
+              "label": "J",
+              "estimated": false
+            },
+            {
+              "start": 31,
+              "end": 36,
+              "label": "K",
+              "estimated": false
+            },
+            {
+              "start": 38,
+              "end": 50,
+              "label": "cold",
+              "estimated": false
+            },
+            {
+              "start": 51,
+              "end": 72,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "J&K Bank: combination of letter \"J\", \"K\", \"cold\" symbol and then \"Bank\""
+    },
+    {
+      "video_id": "Karnataka_Bank",
+      "sign_segments": [
+        {
+          "start": 35,
+          "end": 83,
+          "label": "Karnataka Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 35,
+              "end": 54,
+              "label": "Karnataka",
+              "estimated": false
+            },
+            {
+              "start": 63,
+              "end": 83,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Karnataka Bank: Signed for Car belt showing Karnataka and then followed with sign for Bank"
+    },
+    {
+      "video_id": "Kotak_Mahindra_Bank",
+      "sign_segments": [
+        {
+          "start": 24,
+          "end": 83,
+          "label": "Kotak Bank",
+          "type": "composite",
+          "components": [
+            {
+              "start": 24,
+              "end": 26,
+              "label": "K",
+              "estimated": false
+            },
+            {
+              "start": 30,
+              "end": 33,
+              "label": "O",
+              "estimated": false
+            },
+            {
+              "start": 35,
+              "end": 40,
+              "label": "T",
+              "estimated": false
+            },
+            {
+              "start": 43,
+              "end": 48,
+              "label": "A",
+              "estimated": false
+            },
+            {
+              "start": 51,
+              "end": 58,
+              "label": "K",
+              "estimated": false
+            },
+            {
+              "start": 61,
+              "end": 83,
+              "label": "Bank",
+              "estimated": false
+            }
+          ]
+        }
+      ],
+      "notes": "Kotak Bank: Each letter in Kotak is signed followed with sign for Bank"
+    },
+    {
+      "video_id": "Luck",
+      "sign_segments": [
+        {
+          "start": 14,
+          "end": 67,
+          "label": "Luck",
+          "type": "atomic"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "video_id": "Man",
+      "sign_segments": [
+        {
+          "start": 28,
+          "end": 61,
+          "label": "Man",
+          "type": "atomic"
+        }
+      ],
+      "notes": "Man: its a single sign"
+    }
+  ]
+}
