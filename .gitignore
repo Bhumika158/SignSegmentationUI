@@ -33,6 +33,8 @@ Thumbs.db
 *.log
 
 # Local data (don't commit videos/data)
-data/
+# Note: data/manual_annotations_hierarchical.json is committed (small file)
+data/validation_database*.json
+!data/manual_annotations_hierarchical.json
 videos/
 outputs/

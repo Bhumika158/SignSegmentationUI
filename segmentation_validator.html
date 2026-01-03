@@ -595,8 +595,15 @@
             font-style: italic;
         }
     </style>
-    <!-- Load API configuration if available (for production deployment) -->
-    <script src="config.js" defer></script>
+    <!-- Load API configuration FIRST (before other scripts) -->
+    <script src="config.js"></script>
+    <script>
+        // Ensure API_CONFIG is available globally before main script runs
+        // This runs immediately when config.js loads
+        if (typeof API_CONFIG === 'undefined') {
+            console.warn('⚠ config.js not loaded or API_CONFIG not defined');
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -723,27 +730,51 @@
         };
 
         // API base URL - automatically detects from config.js or uses default
-        // For production, create config.js with: const API_CONFIG = { BASE_URL: 'https://your-api-url.com/api' };
+        // For production, config.js should define: const API_CONFIG = { BASE_URL: 'https://your-api-url.com/api' };
         let API_BASE_URL = 'http://localhost:8001/api';
         
-        // Try to load from config.js if available
-        try {
+        // Function to update API_BASE_URL from config (called multiple times to ensure it's set)
+        function updateAPIBaseURL() {
             if (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE_URL) {
                 API_BASE_URL = API_CONFIG.BASE_URL;
-                console.log('Using API URL from config.js:', API_BASE_URL);
+                console.log('✓ Using API URL from config.js:', API_BASE_URL);
+                return true;
+            } else {
+                // Check if we're on a deployed domain (not localhost)
+                if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                    console.error('✗ config.js not found or API_CONFIG not defined!');
+                    console.error('✗ Create config.js with: const API_CONFIG = { BASE_URL: "https://signsegmentationui.onrender.com/api" };');
+                    return false;
+                } else {
+                    console.log('Using default localhost API URL for local development:', API_BASE_URL);
+                    return true;
+                }
             }
-        } catch (e) {
-            // config.js not found, use default
-            console.log('Using default API URL:', API_BASE_URL);
+        }
+        
+        // Try to update immediately (config.js should be loaded by now)
+        updateAPIBaseURL();
+        
+        // Also try after DOM loads (in case config.js loaded asynchronously)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateAPIBaseURL);
+        } else {
+            // DOM already loaded, try again
+            updateAPIBaseURL();
         }
         let apiAvailable = false;
         
         // Check API connection status
         async function checkAPIStatus() {
+            // Ensure API_BASE_URL is updated from config before making request
+            updateAPIBaseURL();
+            
+            // Use the configured API URL, not hardcoded localhost
+            const apiRoot = API_BASE_URL.replace('/api', '');
             try {
-                const response = await fetch('http://localhost:8001/', {
+                const response = await fetch(apiRoot, {
                     method: 'GET',
-                    signal: AbortSignal.timeout(3000) // 3 second timeout
+                    signal: AbortSignal.timeout(5000) // 5 second timeout
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -904,21 +935,28 @@
                 const annotationPaths = [
                     'data/manual_annotations_hierarchical.json',
                     '../outputs/manual_annotations_hierarchical.json',
-                    'outputs/manual_annotations_hierarchical.json'
+                    'outputs/manual_annotations_hierarchical.json',
+                    'https://raw.githubusercontent.com/Bhumika158/SignSegmentationUI/main/data/manual_annotations_hierarchical.json'
                 ];
                 
                 let response = null;
+                let loadedPath = null;
                 for (const path of annotationPaths) {
                     try {
                         response = await fetch(path);
-                        if (response.ok) break;
+                        if (response.ok) {
+                            loadedPath = path;
+                            console.log(`✓ Loaded annotations from: ${path}`);
+                            break;
+                        }
                     } catch (e) {
                         continue;
                     }
                 }
                 
                 if (!response || !response.ok) {
-                    throw new Error(`Could not load annotations from any path. Tried: ${annotationPaths.join(', ')}`);
+                    const errorMsg = `Could not load annotations from any path.\n\nTried:\n${annotationPaths.map(p => `  - ${p}`).join('\n')}\n\nPlease ensure the annotations file is available.`;
+                    throw new Error(errorMsg);
                 }
                 
                 if (!response.ok) {
@@ -1063,8 +1101,16 @@
             // These have frame numbers overlaid and match the annotation frame numbers exactly
             const video = document.getElementById('mainVideoPlayer');
             // Try multiple paths for annotation videos
-            const browserAnnotationPath = `data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
-            const regularPath = `videos/${videoId}.mp4`;
+            const videoBaseUrl = window.location.hostname.includes('render.com') || window.location.hostname.includes('github.io')
+                ? 'https://raw.githubusercontent.com/Bhumika158/SignSegmentationUI/main/'
+                : '';
+            
+            const browserAnnotationPath = videoBaseUrl
+                ? `${videoBaseUrl}data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`
+                : `data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
+            const regularPath = videoBaseUrl
+                ? `${videoBaseUrl}videos/${videoId}.mp4`
+                : `videos/${videoId}.mp4`;
             // Fallback paths
             const fallbackAnnotationPath = `../data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
             const fallbackRegularPath = `../videos/${videoId}.mp4`;
