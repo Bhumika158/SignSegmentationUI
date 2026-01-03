@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: sign-segmentation-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn validation_api_tinydb:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PORT
+        value: 8001
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DB_PATH
+        value: /tmp/validation_database_tinydb.json
+
+  - type: web
+    name: sign-segmentation-ui
+    env: static
+    buildCommand: echo "No build needed"
+    staticPublishPath: .

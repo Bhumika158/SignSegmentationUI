@@ -1,0 +1,15 @@
+// Configuration file for API endpoint
+// Copy this to config.js and update with your deployed API URL
+// This file is loaded by segmentation_validator.html
+
+const API_CONFIG = {
+    // For local development:
+    // BASE_URL: 'http://localhost:8001/api',
+    
+    // For production (update with your deployed API URL):
+    BASE_URL: 'https://your-api-url.onrender.com/api',
+    // OR
+    // BASE_URL: 'https://your-api-url.railway.app/api',
+    // OR
+    // BASE_URL: 'https://your-api-url.fly.dev/api',
+};

@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Segmentation Validator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Progress Table Styles */
+        .progress-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .progress-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .progress-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .progress-table tbody tr:hover {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .progress-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .status-badge.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-badge.needs-review {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-badge.in-progress {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .video-selector {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .video-selector label {
+            display: block;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .video-selector select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        /* Main validation layout - side by side */
+        .validation-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .validation-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-pane {
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            min-height: 400px;
+        }
+
+        .video-pane video {
+            width: 100%;
+            height: auto;
+            display: block;
+            min-height: 400px;
+            background: #000;
+        }
+
+        .video-controls {
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: white;
+        }
+
+        .video-controls button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        .video-controls button:hover {
+            background: #5568d3;
+        }
+
+        .video-controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #replayBtn {
+            background: #17a2b8;
+        }
+
+        #replayBtn:hover {
+            background: #138496;
+        }
+
+        .frame-info {
+            margin-left: auto;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .signs-pane {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .signs-pane h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .sign-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sign-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .sign-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .sign-item.active {
+            border-color: #667eea;
+            background: #e7f3ff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .sign-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sign-label {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sign-type-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .sign-type-badge.atomic {
+            background: #667eea;
+            color: white;
+        }
+
+        .sign-type-badge.composite {
+            background: #f093fb;
+            color: white;
+        }
+
+        .sign-frames {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .sign-components {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .sign-components h4 {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .component-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .component-item:hover {
+            background: #e9ecef;
+            transform: translateX(3px);
+        }
+
+        .component-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .segment-validation {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .segment-validation-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .segment-validation-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .segment-validation-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .segment-validation-btn.correct {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .segment-validation-btn.correct.selected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .segment-validation-btn.incorrect {
+            border-color: #f44336;
+            color: #f44336;
+        }
+
+        .segment-validation-btn.incorrect.selected {
+            background: #f44336;
+            color: white;
+        }
+
+        .segment-validation-btn.needs-review {
+            border-color: #ff9800;
+            color: #ff9800;
+        }
+
+        .segment-validation-btn.needs-review.selected {
+            background: #ff9800;
+            color: white;
+        }
+
+        .segment-comment {
+            margin-top: 8px;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9em;
+            resize: vertical;
+            min-height: 40px;
+        }
+
+        .segment-validation-status {
+            font-size: 0.85em;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .segment-validation-status.validated {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .component-validation {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .confirm-all-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .confirm-all-btn {
+            padding: 12px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .confirm-all-btn:hover {
+            background: #45a049;
+            transform: scale(1.02);
+        }
+
+        .confirm-all-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .component-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .component-frames {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .segmentation-logic {
+            background: #e7f3ff;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #2196F3;
+            margin-bottom: 30px;
+        }
+
+        .segmentation-logic h3 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .segmentation-logic p {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .save-section {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            padding: 12px;
+            width: 100%;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .no-signs-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+    <!-- Load API configuration if available (for production deployment) -->
+    <script src="config.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✋ Sign Segmentation Validator</h1>
+            <p>Review and validate sign language segmentation logic</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="progress">📊 Progress Table</div>
+            <div class="tab" data-tab="validate">✅ Validate Segments</div>
+        </div>
+
+        <div class="content">
+            <!-- Progress Table Tab -->
+            <div class="tab-content active" id="progressTab">
+                <h2 style="margin-bottom: 20px;">Validation Progress</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+                    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search videos..." style="flex: 1;">
+                    <button class="refresh-btn" id="refreshProgressBtn" title="Refresh progress table" style="padding: 8px 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">🔄 Refresh</button>
+                    <button class="download-btn" id="downloadResultsBtn" title="Download validation results" style="padding: 8px 15px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">📥 Download</button>
+                </div>
+                <table class="progress-table">
+                    <thead>
+                        <tr>
+                            <th>Video ID</th>
+                            <th>Total Signs</th>
+                            <th>Atomic</th>
+                            <th>Composite</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody id="progressTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Validation Tab -->
+            <div class="tab-content" id="validateTab">
+                <div class="video-selector">
+                    <label for="videoSelect">Select Video to Validate:</label>
+                    <select id="videoSelect">
+                        <option value="">-- Please select a video --</option>
+                    </select>
+                </div>
+
+                <div id="statsBar" class="stats-bar" style="display: none;">
+                    <div class="stat-card">
+                        <h3 id="totalSigns">0</h3>
+                        <p>Total Signs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="atomicSigns">0</h3>
+                        <p>Atomic Signs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="compositeSigns">0</h3>
+                        <p>Composite Signs</p>
+                    </div>
+                </div>
+
+                <div id="mainContent" style="display: none;">
+                    <div class="segmentation-logic" id="segmentationLogic">
+                        <h3>📝 Segmentation Logic</h3>
+                        <p id="logicText">Loading...</p>
+                    </div>
+
+                    <div class="validation-layout">
+                        <!-- Video Pane (Left) -->
+                        <div class="video-pane">
+                            <video id="mainVideoPlayer" controls preload="auto">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-controls">
+                                <button id="playBtn">▶ Play Segment</button>
+                                <button id="pauseBtn" style="display:none;">⏸ Pause</button>
+                                <button id="replayBtn" style="display:none;">🔄 Replay Segment</button>
+                                <div class="frame-info" id="frameInfo">Frame: - / -</div>
+                            </div>
+                        </div>
+
+                        <!-- Signs Pane (Right) -->
+                        <div class="signs-pane">
+                            <h2>📋 Sign Segments</h2>
+                            <div class="sign-list" id="signList">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="save-section">
+                        <div class="status-message" id="statusMessage"></div>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="empty-state">
+                    <h3>👋 Welcome!</h3>
+                    <p>Please select a video from the dropdown above to start validation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let annotationsData = null;
+        let currentVideo = null;
+        let validationResults = {};
+        let allValidationResults = {};
+        let segmentValidations = {}; // Store segment-level validations: {videoId: {segmentIndex: {status, feedback, timestamp}}}
+        let currentSegment = null;
+        let currentComponent = null;
+        let actualFPS = 25; // Default FPS
+        const DEFAULT_FPS = 25; // Default frame rate
+        let frameOffset = 0; // Frame offset to account for misalignment
+        
+        // FPS mapping for videos that don't use default FPS
+        // Can be populated based on actual video FPS from NPY metadata
+        const videoFPSMap = {
+            // Add video-specific FPS here if needed
+            // Example: "21_Twenty_One": 30,
+        };
+
+        // API base URL - automatically detects from config.js or uses default
+        // For production, create config.js with: const API_CONFIG = { BASE_URL: 'https://your-api-url.com/api' };
+        let API_BASE_URL = 'http://localhost:8001/api';
+        
+        // Try to load from config.js if available
+        try {
+            if (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE_URL) {
+                API_BASE_URL = API_CONFIG.BASE_URL;
+                console.log('Using API URL from config.js:', API_BASE_URL);
+            }
+        } catch (e) {
+            // config.js not found, use default
+            console.log('Using default API URL:', API_BASE_URL);
+        }
+        let apiAvailable = false;
+        
+        // Check API connection status
+        async function checkAPIStatus() {
+            try {
+                const response = await fetch('http://localhost:8001/', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(3000) // 3 second timeout
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    apiAvailable = true;
+                    console.log('✓ API is available:', data);
+                    updateAPIStatusIndicator(true);
+                    return true;
+                } else {
+                    apiAvailable = false;
+                    updateAPIStatusIndicator(false, `HTTP ${response.status}`);
+                    return false;
+                }
+            } catch (error) {
+                apiAvailable = false;
+                const errorMsg = error.name === 'AbortError' ? 'Connection timeout' : error.message;
+                console.error('✗ API not available:', errorMsg);
+                updateAPIStatusIndicator(false, errorMsg);
+                return false;
+            }
+        }
+        
+        // Update API status indicator in UI
+        function updateAPIStatusIndicator(available, errorMsg = '') {
+            let indicator = document.getElementById('apiStatusIndicator');
+            if (!indicator) {
+                // Create status indicator
+                indicator = document.createElement('div');
+                indicator.id = 'apiStatusIndicator';
+                indicator.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 10px 15px; border-radius: 5px; z-index: 1000; font-size: 12px; font-weight: bold;';
+                document.body.appendChild(indicator);
+            }
+            
+            if (available) {
+                indicator.textContent = '✓ API Connected';
+                indicator.style.backgroundColor = '#4CAF50';
+                indicator.style.color = 'white';
+            } else {
+                indicator.textContent = `✗ API Offline${errorMsg ? ': ' + errorMsg : ''}`;
+                indicator.style.backgroundColor = '#f44336';
+                indicator.style.color = 'white';
+                indicator.title = 'API server not running. Start with: python run_validator_tinydb.py';
+            }
+        }
+        
+        // Load saved validation results from API
+        async function loadSavedValidations() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/validations`, {
+                    signal: AbortSignal.timeout(5000) // 5 second timeout
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    allValidationResults = data.validations || {};
+                    console.log('✓ Loaded validations from API:', Object.keys(allValidationResults).length, 'videos');
+                    
+                    // Restore segment validations from saved data
+                    Object.keys(allValidationResults).forEach(videoId => {
+                        const videoValidations = allValidationResults[videoId];
+                        if (videoValidations && videoValidations.length > 0) {
+                            const latest = videoValidations[videoValidations.length - 1];
+                            if (latest.segment_validations) {
+                                if (!segmentValidations[videoId]) {
+                                    segmentValidations[videoId] = {};
+                                }
+                                segmentValidations[videoId] = latest.segment_validations;
+                            }
+                        }
+                    });
+                    
+                    apiAvailable = true;
+                    updateAPIStatusIndicator(true);
+                    return true;
+                } else {
+                    console.warn('✗ Failed to load from API, HTTP status:', response.status);
+                    allValidationResults = {};
+                    apiAvailable = false;
+                    updateAPIStatusIndicator(false, `HTTP ${response.status}`);
+                    return false;
+                }
+            } catch (error) {
+                console.error('✗ Error loading validations from API:', error);
+                apiAvailable = false;
+                const errorMsg = error.name === 'AbortError' ? 'Connection timeout' : error.message;
+                updateAPIStatusIndicator(false, errorMsg);
+                
+                // Fallback to localStorage if API unavailable
+                const saved = localStorage.getItem('signSegmentationValidations');
+                if (saved) {
+                    try {
+                        allValidationResults = JSON.parse(saved);
+                        console.log('⚠ Using localStorage fallback:', Object.keys(allValidationResults).length, 'videos');
+                    } catch (e) {
+                        console.error('Error parsing localStorage:', e);
+                        allValidationResults = {};
+                    }
+                } else {
+                    allValidationResults = {};
+                }
+                return false;
+            }
+        }
+
+        // Save validation result to API
+        async function saveValidationToAPI(videoId, validation) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/validations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        video_id: videoId,
+                        validation: validation
+                    }),
+                    signal: AbortSignal.timeout(5000) // 5 second timeout
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✓ Validation saved to API:', result);
+                    apiAvailable = true;
+                    updateAPIStatusIndicator(true);
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch {
+                        errorData = { detail: errorText };
+                    }
+                    console.error('✗ API error:', response.status, errorData);
+                    apiAvailable = false;
+                    updateAPIStatusIndicator(false, `HTTP ${response.status}`);
+                    return false;
+                }
+            } catch (error) {
+                console.error('✗ Error saving to API:', error);
+                apiAvailable = false;
+                const errorMsg = error.name === 'AbortError' ? 'Connection timeout' : error.message;
+                updateAPIStatusIndicator(false, errorMsg);
+                
+                // Fallback to localStorage
+                if (!allValidationResults[videoId]) {
+                    allValidationResults[videoId] = [];
+                }
+                allValidationResults[videoId].push(validation);
+                localStorage.setItem('signSegmentationValidations', JSON.stringify(allValidationResults));
+                console.log('⚠ Saved to localStorage as fallback');
+                return false;
+            }
+        }
+
+        // Load annotations data
+        async function loadAnnotations() {
+            try {
+                // Try multiple paths for annotations file
+                const annotationPaths = [
+                    'data/manual_annotations_hierarchical.json',
+                    '../outputs/manual_annotations_hierarchical.json',
+                    'outputs/manual_annotations_hierarchical.json'
+                ];
+                
+                let response = null;
+                for (const path of annotationPaths) {
+                    try {
+                        response = await fetch(path);
+                        if (response.ok) break;
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                if (!response || !response.ok) {
+                    throw new Error(`Could not load annotations from any path. Tried: ${annotationPaths.join(', ')}`);
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                annotationsData = await response.json();
+                console.log('✓ Annotations loaded:', annotationsData.annotations?.length || 0, 'videos');
+                populateVideoSelect();
+                
+                // Check API status first
+                await checkAPIStatus();
+                
+                // Load validations from API
+                await loadSavedValidations();
+                populateProgressTable();
+            } catch (error) {
+                console.error('Error loading annotations:', error);
+                const errorMsg = `Error loading annotations data.\n\nDetails: ${error.message}\n\nPlease make sure:\n1. The UI server is running\n2. The annotations JSON file exists in data/ or outputs/ directory\n3. Check browser console for more details`;
+                alert(errorMsg);
+            }
+        }
+
+        function populateVideoSelect() {
+            const select = document.getElementById('videoSelect');
+            annotationsData.annotations.forEach(annotation => {
+                const option = document.createElement('option');
+                option.value = annotation.video_id;
+                option.textContent = annotation.video_id;
+                select.appendChild(option);
+            });
+        }
+
+        function getVideoStatus(videoId) {
+            if (!allValidationResults[videoId] || allValidationResults[videoId].length === 0) {
+                return 'pending';
+            }
+            const latest = allValidationResults[videoId][allValidationResults[videoId].length - 1];
+            return latest.status;
+        }
+
+        function populateProgressTable() {
+            const tbody = document.getElementById('progressTableBody');
+            tbody.innerHTML = '';
+
+            annotationsData.annotations.forEach(annotation => {
+                const row = document.createElement('tr');
+                const atomicCount = annotation.sign_segments.filter(s => s.type === 'atomic').length;
+                const compositeCount = annotation.sign_segments.filter(s => s.type === 'composite').length;
+                const totalCount = annotation.sign_segments.length;
+                const status = getVideoStatus(annotation.video_id);
+                const latestValidation = allValidationResults[annotation.video_id] 
+                    ? allValidationResults[annotation.video_id][allValidationResults[annotation.video_id].length - 1]
+                    : null;
+
+                let statusBadge = '';
+                let statusClass = 'pending';
+                if (status === 'correct') {
+                    statusBadge = 'Completed';
+                    statusClass = 'completed';
+                } else if (status === 'incorrect') {
+                    statusBadge = 'Needs Review';
+                    statusClass = 'needs-review';
+                } else if (status === 'needs_review') {
+                    statusBadge = 'In Progress';
+                    statusClass = 'in-progress';
+                } else {
+                    statusBadge = 'Pending';
+                    statusClass = 'pending';
+                }
+
+                row.innerHTML = `
+                    <td><strong>${annotation.video_id}</strong></td>
+                    <td>${totalCount}</td>
+                    <td>${atomicCount}</td>
+                    <td>${compositeCount}</td>
+                    <td><span class="status-badge ${statusClass}">${statusBadge}</span></td>
+                    <td>${latestValidation ? new Date(latestValidation.timestamp).toLocaleDateString() : '-'}</td>
+                    <td>${latestValidation && latestValidation.feedback ? '✓' : '-'}</td>
+                `;
+
+                row.addEventListener('click', () => {
+                    document.getElementById('videoSelect').value = annotation.video_id;
+                    switchTab('validate');
+                    loadVideo(annotation.video_id);
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+        }
+
+        function getVideoPath(videoId) {
+            // Prefer landmark videos if available, otherwise use regular video
+            // Landmark videos show landmarks overlaid on the video
+            // Try multiple paths for videos
+            const landmarkPath = `data/visualizations/${videoId}_all_frames/${videoId}_landmarks.mp4`;
+            const regularPath = `videos/${videoId}.mp4`;
+            // Fallback paths
+            const fallbackLandmarkPath = `../data/visualizations/${videoId}_all_frames/${videoId}_landmarks.mp4`;
+            const fallbackRegularPath = `../videos/${videoId}.mp4`;
+            
+            // Try landmark video first, fallback to regular
+            return regularPath; // Will check for landmark video in loadVideo
+        }
+
+        function loadVideo(videoId) {
+            currentVideo = annotationsData.annotations.find(a => a.video_id === videoId);
+            if (!currentVideo) return;
+
+            // Update stats
+            const atomicCount = currentVideo.sign_segments.filter(s => s.type === 'atomic').length;
+            const compositeCount = currentVideo.sign_segments.filter(s => s.type === 'composite').length;
+            const totalCount = currentVideo.sign_segments.length;
+
+            document.getElementById('totalSigns').textContent = totalCount;
+            document.getElementById('atomicSigns').textContent = atomicCount;
+            document.getElementById('compositeSigns').textContent = compositeCount;
+
+            // Show stats
+            document.getElementById('statsBar').style.display = 'grid';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+
+            // Display segmentation logic
+            const logicText = currentVideo.notes || 'No specific notes provided. Please review the segments below.';
+            document.getElementById('logicText').textContent = logicText;
+
+            // Load video - try browser-compatible annotation videos first, then regular videos
+            // Browser-compatible annotation videos are in annotation_videos_browser/ (H.264 codec)
+            // These have frame numbers overlaid and match the annotation frame numbers exactly
+            const video = document.getElementById('mainVideoPlayer');
+            // Try multiple paths for annotation videos
+            const browserAnnotationPath = `data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
+            const regularPath = `videos/${videoId}.mp4`;
+            // Fallback paths
+            const fallbackAnnotationPath = `../data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
+            const fallbackRegularPath = `../videos/${videoId}.mp4`;
+            
+            // Reset video state
+            video.pause();
+            currentSegment = null;
+            currentComponent = null;
+            
+            // Clear any existing handlers
+            if (video._segmentHandler) {
+                try {
+                    video.removeEventListener('timeupdate', video._segmentHandler);
+                } catch (e) {
+                    console.warn('Error removing segment handler:', e);
+                }
+                video._segmentHandler = null;
+            }
+            if (video._seekHandler) {
+                try {
+                    video.removeEventListener('seeked', video._seekHandler);
+                } catch (e) {
+                    console.warn('Error removing seek handler:', e);
+                }
+                video._seekHandler = null;
+            }
+            
+            // Clear previous source to reset video element
+            video.src = '';
+            video.load();
+            
+            // Set preload
+            video.preload = 'auto';
+            
+            // Set up error handler with fallback
+            let videoLoaded = false;
+            const tryNextVideo = () => {
+                if (!videoLoaded && video.src !== regularPath) {
+                    console.log('Trying regular video as fallback');
+                    video.src = regularPath;
+                    video.load();
+                } else if (!videoLoaded) {
+                    document.getElementById('frameInfo').textContent = 'Error: Could not load video. Check console.';
+                }
+            };
+            
+            video.addEventListener('error', function onVideoError(e) {
+                console.error('Video error:', e);
+                console.error('Video src:', video.src);
+                if (video.error) {
+                    console.error(`Error code: ${video.error.code}, message: ${video.error.message}`);
+                }
+                // Try regular video if annotation video fails
+                if (video.src === browserAnnotationPath || video.src.includes('annotation_videos_browser')) {
+                    video.removeEventListener('error', onVideoError);
+                    tryNextVideo();
+                } else {
+                    document.getElementById('frameInfo').textContent = `Error loading video: ${video.error ? video.error.message : 'Unknown error'}. Check console.`;
+                }
+            });
+            
+            // Handle when video can play
+            video.addEventListener('canplay', () => {
+                console.log('Video can play');
+                video.style.display = 'block';
+                video.style.visibility = 'visible';
+            });
+            
+            // Wait for video to be ready and detect FPS
+            video.addEventListener('loadedmetadata', () => {
+                videoLoaded = true;
+                
+                // Get FPS for this video
+                if (videoFPSMap[videoId]) {
+                    actualFPS = videoFPSMap[videoId];
+                    console.log(`Using mapped FPS for ${videoId}: ${actualFPS}`);
+                } else {
+                    actualFPS = DEFAULT_FPS;
+                    console.log(`Using default FPS for ${videoId}: ${actualFPS}`);
+                }
+                
+                const duration = video.duration;
+                const width = video.videoWidth;
+                const height = video.videoHeight;
+                frameOffset = 0;
+                
+                console.log(`Video loaded: ${video.src}`);
+                console.log(`  Duration: ${duration.toFixed(2)}s, Dimensions: ${width}x${height}, FPS: ${actualFPS}`);
+                
+                video.style.display = 'block';
+                video.style.visibility = 'visible';
+                video.style.opacity = '1';
+                
+                document.getElementById('frameInfo').textContent = `Video loaded (${actualFPS} fps). Select a sign to play.`;
+            }, { once: true });
+            
+            // Try browser-compatible annotation video first (has frame numbers), fallback to regular
+            console.log(`Loading annotation video: ${browserAnnotationPath}`);
+            video.src = browserAnnotationPath;
+            video.load();
+
+            // Load segment validations for this video
+            loadSegmentValidations(videoId);
+
+            // Display signs list
+            displaySignsList();
+
+            // Segment validations are loaded in loadSegmentValidations above
+        }
+
+        // Load segment validations from saved validations
+        function loadSegmentValidations(videoId) {
+            if (!segmentValidations[videoId]) {
+                segmentValidations[videoId] = {};
+            }
+
+            // Check if there are saved validations with segment_validations
+            if (allValidationResults[videoId] && allValidationResults[videoId].length > 0) {
+                const latest = allValidationResults[videoId][allValidationResults[videoId].length - 1];
+                if (latest.segment_validations) {
+                    // Restore segment validations
+                    segmentValidations[videoId] = latest.segment_validations;
+                }
+            }
+        }
+
+        function playSegment(startFrame, endFrame) {
+            const video = document.getElementById('mainVideoPlayer');
+            const fps = actualFPS || DEFAULT_FPS;
+            
+            // Calculate time using 25 fps (videos are 25 fps)
+            // Use annotation frames directly
+            const startTime = startFrame / fps;
+            const endTime = (endFrame + 1) / fps;
+            
+            console.log(`Playing segment: frames ${startFrame}-${endFrame}, time ${startTime.toFixed(3)}s-${endTime.toFixed(3)}s (FPS: ${fps})`);
+
+            // Pause video first to stop any current playback
+            video.pause();
+            
+            // CRITICAL: Remove any existing segment handler - must be done before creating new one
+            if (video._segmentHandler) {
+                try {
+                    video.removeEventListener('timeupdate', video._segmentHandler);
+                } catch (e) {
+                    console.warn('Error removing segment handler:', e);
+                }
+                video._segmentHandler = null;
+            }
+            
+            // Remove seek handler if exists
+            if (video._seekHandler) {
+                try {
+                    video.removeEventListener('seeked', video._seekHandler);
+                } catch (e) {
+                    console.warn('Error removing seek handler:', e);
+                }
+                video._seekHandler = null;
+            }
+            
+            // Reset button states
+            document.getElementById('replayBtn').style.display = 'none';
+            document.getElementById('playBtn').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'inline-block';
+            updateFrameInfo(startFrame, endFrame);
+            
+            // Create segment handler (stop at end)
+            const segmentHandler = (() => {
+                const handlerStartFrame = startFrame;
+                const handlerEndFrame = endFrame;
+                const handlerEndTime = endTime;
+                
+                return () => {
+                    const currentFrame = Math.round(video.currentTime * fps);
+                    if (currentFrame > handlerEndFrame || video.currentTime >= handlerEndTime) {
+                        video.pause();
+                        video.currentTime = handlerEndFrame / fps;
+                        document.getElementById('replayBtn').style.display = 'inline-block';
+                        document.getElementById('playBtn').style.display = 'none';
+                        document.getElementById('pauseBtn').style.display = 'none';
+                        if (video._segmentHandler === segmentHandler) {
+                            video.removeEventListener('timeupdate', segmentHandler);
+                            video._segmentHandler = null;
+                        }
+                        updateFrameInfo(handlerStartFrame, handlerEndFrame);
+                    }
+                };
+            })();
+            
+            video.addEventListener('timeupdate', segmentHandler);
+            video._segmentHandler = segmentHandler;
+
+            // Seek handler (prevent going outside bounds)
+            const seekHandler = () => {
+                if (video.currentTime < startTime) {
+                    video.currentTime = startTime;
+                } else if (video.currentTime > endTime) {
+                    video.currentTime = endTime;
+                }
+            };
+            
+            video.addEventListener('seeked', seekHandler);
+            video._seekHandler = seekHandler;
+
+            // Seek and play - direct, no delays
+            video.currentTime = startTime;
+            video.play().then(() => {
+                updateFrameInfo(startFrame, endFrame);
+                document.getElementById('playBtn').style.display = 'none';
+                document.getElementById('pauseBtn').style.display = 'inline-block';
+            }).catch(err => {
+                console.error('Play error:', err);
+                document.getElementById('playBtn').style.display = 'inline-block';
+                document.getElementById('pauseBtn').style.display = 'none';
+            });
+        }
+
+        function updateFrameInfo(startFrame, endFrame) {
+            const video = document.getElementById('mainVideoPlayer');
+            const fps = actualFPS || DEFAULT_FPS;
+            const currentFrame = Math.round(video.currentTime * fps);
+            // Clamp current frame to segment bounds for display
+            const displayFrame = Math.max(startFrame, Math.min(endFrame, currentFrame));
+            document.getElementById('frameInfo').textContent = 
+                `Frame: ${displayFrame} (${startFrame} - ${endFrame})`;
+        }
+
+        function displaySignsList() {
+            const container = document.getElementById('signList');
+            container.innerHTML = '';
+
+            if (!currentVideo || !currentVideo.sign_segments || currentVideo.sign_segments.length === 0) {
+                container.innerHTML = '<div class="no-signs-message">No sign segments found for this video.</div>';
+                return;
+            }
+
+            currentVideo.sign_segments.forEach((segment, index) => {
+                const signItem = document.createElement('div');
+                signItem.className = 'sign-item';
+                signItem.dataset.segmentIndex = index;
+
+                const header = document.createElement('div');
+                header.className = 'sign-item-header';
+
+                const label = document.createElement('div');
+                label.className = 'sign-label';
+                label.textContent = `${index + 1}. ${segment.label}`;
+
+                const typeBadge = document.createElement('div');
+                typeBadge.className = `sign-type-badge ${segment.type}`;
+                typeBadge.textContent = segment.type.toUpperCase();
+
+                header.appendChild(label);
+                header.appendChild(typeBadge);
+
+                const frames = document.createElement('div');
+                frames.className = 'sign-frames';
+                frames.textContent = `Frames: ${segment.start} → ${segment.end} (${segment.end - segment.start + 1} frames)`;
+
+                signItem.appendChild(header);
+                signItem.appendChild(frames);
+
+                // Add segment validation section
+                const segmentValidation = createSegmentValidation(currentVideo.video_id, index, null, segment);
+                signItem.appendChild(segmentValidation);
+
+                // Click handler for the complete sign
+                // Make the header and frames clickable for the full sign
+                header.style.cursor = 'pointer';
+                frames.style.cursor = 'pointer';
+                
+                const playFullSign = (e) => {
+                    if (e) {
+                        e.stopPropagation();
+                    }
+                    
+                    // Remove active from all items
+                    document.querySelectorAll('.sign-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    signItem.classList.add('active');
+
+                    // IMPORTANT: Set state BEFORE calling playSegment
+                    // Clear component state when playing full sign
+                    currentSegment = segment;
+                    currentComponent = null;
+                    
+                    // Small delay to ensure state is set and handlers are cleared
+                    setTimeout(() => {
+                        playSegment(segment.start, segment.end);
+                    }, 10);
+                };
+                
+                // Add click handlers to header and frames
+                header.addEventListener('click', playFullSign);
+                frames.addEventListener('click', playFullSign);
+                
+                // Also allow clicking on the sign item itself (but not on components)
+                signItem.addEventListener('click', (e) => {
+                    // Only trigger if not clicking on a component or component area
+                    if (e.target.closest('.component-item') || e.target.closest('.sign-components')) {
+                        return;
+                    }
+                    // If clicking on header or frames, those handlers will fire, so skip
+                    if (e.target === header || e.target === frames || header.contains(e.target) || frames.contains(e.target)) {
+                        return;
+                    }
+                    playFullSign(e);
+                });
+
+                // Components for composite signs
+                if (segment.type === 'composite' && segment.components) {
+                    const componentsDiv = document.createElement('div');
+                    componentsDiv.className = 'sign-components';
+                    const componentsTitle = document.createElement('h4');
+                    componentsTitle.textContent = 'Components:';
+                    componentsDiv.appendChild(componentsTitle);
+
+                    segment.components.forEach((component, compIndex) => {
+                        const compItem = document.createElement('div');
+                        compItem.className = 'component-item';
+                        
+                        const compHeader = document.createElement('div');
+                        compHeader.className = 'component-item-header';
+                        compHeader.innerHTML = `
+                            <span class="component-label">${compIndex + 1}. ${component.label}</span>
+                            <span class="component-frames">Frames ${component.start}-${component.end}</span>
+                        `;
+                        compItem.appendChild(compHeader);
+
+                        // Add component validation section
+                        const compValidation = createSegmentValidation(currentVideo.video_id, index, compIndex, component);
+                        compItem.appendChild(compValidation);
+
+                        // Click handler for component (only on header, not validation area)
+                        compHeader.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent triggering parent sign click
+
+                            // Remove active from all items
+                            document.querySelectorAll('.sign-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            signItem.classList.add('active');
+
+                            // IMPORTANT: Set state BEFORE calling playSegment
+                            currentSegment = segment;
+                            currentComponent = component;
+                            
+                            // Small delay to ensure state is set and handlers are cleared
+                            setTimeout(() => {
+                                playSegment(component.start, component.end);
+                            }, 10);
+                        });
+
+                        componentsDiv.appendChild(compItem);
+                    });
+
+                    signItem.appendChild(componentsDiv);
+                }
+
+                container.appendChild(signItem);
+            });
+
+            // Add "Confirm All" section at the end
+            addConfirmAllSection();
+        }
+
+        // Create validation UI for a segment or component
+        function createSegmentValidation(videoId, segmentIndex, componentIndex, segment) {
+            const validationDiv = document.createElement('div');
+            validationDiv.className = componentIndex !== null ? 'component-validation' : 'segment-validation';
+            
+            const key = componentIndex !== null ? `${videoId}_${segmentIndex}_${componentIndex}` : `${videoId}_${segmentIndex}`;
+            const currentValidation = segmentValidations[videoId]?.[key] || null;
+
+            // Validation buttons
+            const buttonsDiv = document.createElement('div');
+            buttonsDiv.className = 'segment-validation-buttons';
+
+            const correctBtn = document.createElement('button');
+            correctBtn.className = 'segment-validation-btn correct';
+            correctBtn.textContent = '✓ Correct';
+            correctBtn.dataset.status = 'correct';
+            if (currentValidation?.status === 'correct') {
+                correctBtn.classList.add('selected');
+            }
+
+            const incorrectBtn = document.createElement('button');
+            incorrectBtn.className = 'segment-validation-btn incorrect';
+            incorrectBtn.textContent = '✗ Incorrect';
+            incorrectBtn.dataset.status = 'incorrect';
+            if (currentValidation?.status === 'incorrect') {
+                incorrectBtn.classList.add('selected');
+            }
+
+            const reviewBtn = document.createElement('button');
+            reviewBtn.className = 'segment-validation-btn needs-review';
+            reviewBtn.textContent = '⚠ Review';
+            reviewBtn.dataset.status = 'needs_review';
+            if (currentValidation?.status === 'needs_review') {
+                reviewBtn.classList.add('selected');
+            }
+
+            // Status indicator
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'segment-validation-status';
+            if (currentValidation) {
+                statusDiv.classList.add('validated');
+                statusDiv.textContent = '✓ Validated';
+            } else {
+                statusDiv.textContent = 'Not validated';
+            }
+
+            // Comment textarea
+            const commentTextarea = document.createElement('textarea');
+            commentTextarea.className = 'segment-comment';
+            commentTextarea.placeholder = 'Add comments for this segment...';
+            if (currentValidation?.feedback) {
+                commentTextarea.value = currentValidation.feedback;
+            }
+
+            // Button click handlers
+            const handleValidationClick = (status, clickedBtn) => {
+                // Remove selected from all buttons
+                [correctBtn, incorrectBtn, reviewBtn].forEach(btn => btn.classList.remove('selected'));
+                
+                // Add selected to clicked button
+                clickedBtn.classList.add('selected');
+                
+                // Save validation
+                if (!segmentValidations[videoId]) {
+                    segmentValidations[videoId] = {};
+                }
+                segmentValidations[videoId][key] = {
+                    status: status,
+                    feedback: commentTextarea.value,
+                    timestamp: new Date().toISOString(),
+                    segmentIndex: segmentIndex,
+                    componentIndex: componentIndex,
+                    label: segment.label
+                };
+                
+                // Update status
+                statusDiv.classList.add('validated');
+                statusDiv.textContent = '✓ Validated';
+                
+                // Update confirm all button state
+                updateConfirmAllButton();
+            };
+
+            correctBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleValidationClick('correct', correctBtn);
+            });
+
+            incorrectBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleValidationClick('incorrect', incorrectBtn);
+            });
+
+            reviewBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleValidationClick('needs_review', reviewBtn);
+            });
+
+            // Update validation when comment changes
+            commentTextarea.addEventListener('input', (e) => {
+                e.stopPropagation();
+                if (segmentValidations[videoId]?.[key]) {
+                    segmentValidations[videoId][key].feedback = commentTextarea.value;
+                }
+            });
+
+            buttonsDiv.appendChild(correctBtn);
+            buttonsDiv.appendChild(incorrectBtn);
+            buttonsDiv.appendChild(reviewBtn);
+
+            validationDiv.appendChild(buttonsDiv);
+            validationDiv.appendChild(statusDiv);
+            validationDiv.appendChild(commentTextarea);
+
+            return validationDiv;
+        }
+
+        // Add "Confirm All" section
+        function addConfirmAllSection() {
+            const container = document.getElementById('signList');
+            
+            // Remove existing confirm all section if any
+            const existing = document.getElementById('confirmAllSection');
+            if (existing) {
+                existing.remove();
+            }
+
+            const confirmSection = document.createElement('div');
+            confirmSection.id = 'confirmAllSection';
+            confirmSection.className = 'confirm-all-section';
+            
+            const confirmBtn = document.createElement('button');
+            confirmBtn.id = 'confirmAllBtn';
+            confirmBtn.className = 'confirm-all-btn';
+            confirmBtn.textContent = '✓ Confirm All Segments';
+            confirmBtn.disabled = true;
+
+            confirmBtn.addEventListener('click', async () => {
+                await saveAllSegmentValidations();
+            });
+
+            confirmSection.appendChild(confirmBtn);
+            container.appendChild(confirmSection);
+
+            updateConfirmAllButton();
+        }
+
+        // Update "Confirm All" button state
+        function updateConfirmAllButton() {
+            if (!currentVideo) return;
+
+            const videoId = currentVideo.video_id;
+            const allValidated = currentVideo.sign_segments.every((segment, segIndex) => {
+                // Check if segment is validated
+                const segKey = `${videoId}_${segIndex}`;
+                const segValidation = segmentValidations[videoId]?.[segKey];
+                
+                if (!segValidation || segValidation.status !== 'correct') {
+                    return false;
+                }
+
+                // For composite signs, check all components
+                if (segment.type === 'composite' && segment.components) {
+                    return segment.components.every((component, compIndex) => {
+                        const compKey = `${videoId}_${segIndex}_${compIndex}`;
+                        const compValidation = segmentValidations[videoId]?.[compKey];
+                        return compValidation && compValidation.status === 'correct';
+                    });
+                }
+
+                return true;
+            });
+
+            const confirmBtn = document.getElementById('confirmAllBtn');
+            if (confirmBtn) {
+                confirmBtn.disabled = !allValidated;
+            }
+        }
+
+        // Save all segment validations
+        async function saveAllSegmentValidations() {
+            if (!currentVideo) return;
+
+            const videoId = currentVideo.video_id;
+            const validations = segmentValidations[videoId] || {};
+
+            // Create overall validation entry with segment details
+            const validation = {
+                timestamp: new Date().toISOString(),
+                status: 'correct', // All segments validated as correct
+                feedback: 'All segments validated individually',
+                validator: 'community_member',
+                segment_validations: validations // Include all segment-level validations
+            };
+
+            const saveBtn = document.getElementById('confirmAllBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Saving...';
+
+            const saved = await saveValidationToAPI(videoId, validation);
+            
+            await loadSavedValidations();
+            populateProgressTable();
+
+            const statusMsg = document.getElementById('statusMessage');
+            statusMsg.className = 'status-message success';
+            statusMsg.textContent = saved 
+                ? '✓ All segment validations saved to database successfully!'
+                : '✓ All segment validations saved (using local storage - API unavailable)';
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = '✓ Confirm All Segments';
+
+            setTimeout(() => {
+                statusMsg.textContent = '';
+                statusMsg.className = 'status-message';
+            }, 3000);
+        }
+
+
+        // Video player event listeners
+        const video = document.getElementById('mainVideoPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const replayBtn = document.getElementById('replayBtn');
+
+        playBtn.addEventListener('click', () => {
+            if (currentSegment) {
+                if (currentComponent) {
+                    playSegment(currentComponent.start, currentComponent.end);
+                } else {
+                    playSegment(currentSegment.start, currentSegment.end);
+                }
+            } else {
+                video.play();
+                playBtn.style.display = 'none';
+                pauseBtn.style.display = 'inline-block';
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            video.pause();
+            playBtn.style.display = 'inline-block';
+            pauseBtn.style.display = 'none';
+        });
+
+        replayBtn.addEventListener('click', () => {
+            if (currentSegment) {
+                if (currentComponent) {
+                    playSegment(currentComponent.start, currentComponent.end);
+                } else {
+                    playSegment(currentSegment.start, currentSegment.end);
+                }
+            }
+        });
+
+        video.addEventListener('play', () => {
+            if (currentSegment) {
+                playBtn.style.display = 'none';
+                pauseBtn.style.display = 'inline-block';
+                replayBtn.style.display = 'none';
+            }
+        });
+
+        video.addEventListener('pause', () => {
+            // Only update if we're not at the end of a segment
+            if (currentSegment && video._segmentHandler) {
+                playBtn.style.display = 'inline-block';
+                pauseBtn.style.display = 'none';
+            }
+        });
+
+        video.addEventListener('timeupdate', () => {
+            if (currentSegment) {
+                if (currentComponent) {
+                    updateFrameInfo(currentComponent.start, currentComponent.end);
+                } else {
+                    updateFrameInfo(currentSegment.start, currentSegment.end);
+                }
+            }
+        });
+
+        // Event listeners
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.dataset.tab);
+            });
+        });
+
+        document.getElementById('videoSelect').addEventListener('change', (e) => {
+            if (e.target.value) {
+                loadVideo(e.target.value);
+            }
+        });
+
+        // Refresh progress table button
+        document.getElementById('refreshProgressBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('refreshProgressBtn');
+            btn.disabled = true;
+            btn.textContent = '🔄 Refreshing...';
+            
+            await checkAPIStatus();
+            await loadSavedValidations();
+            populateProgressTable();
+            
+            btn.disabled = false;
+            btn.textContent = '🔄 Refresh';
+        });
+
+        // Download results button
+        document.getElementById('downloadResultsBtn').addEventListener('click', () => {
+            downloadValidationResults();
+        });
+
+
+        function downloadValidationResults() {
+            const dataStr = JSON.stringify(allValidationResults, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `validation_results_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#progressTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Initialize
+        loadAnnotations();
+    </script>
+</body>
+</html>
