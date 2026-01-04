@@ -11,6 +11,16 @@ services:
         value: 3.11.0
       - key: DB_PATH
         value: /tmp/validation_database_tinydb.json
+      - key: CORS_ORIGINS
+        value: https://signsegmentationui-static.onrender.com
+      # GitHub Releases configuration (videos are hosted there)
+      - key: GITHUB_RELEASE_TAG
+        value: v1.0
+      - key: GITHUB_REPO
+        value: Bhumika158/SignSegmentationUI
+      # Optional: Set CLOUD_STORAGE_URL for cloud storage fallback (R2, S3, etc.)
+      # - key: CLOUD_STORAGE_URL
+      #   value: https://your-cloud-storage-url.com
 
   - type: web
     name: sign-segmentation-ui

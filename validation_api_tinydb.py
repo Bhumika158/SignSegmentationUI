@@ -8,10 +8,12 @@ No server required, just a Python library.
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from pathlib import Path
 from datetime import datetime
+import os
 
 # TinyDB imports
 try:
@@ -274,6 +276,239 @@ def delete_video_validations(video_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+# Video serving endpoints
+# Videos can be stored in multiple locations - check in order
+def find_video_file(video_id: str, video_type: str = "regular") -> Optional[Path]:
+    """
+    Find video file in multiple possible locations.
+    
+    Args:
+        video_id: The video ID (e.g., "My_Name_Is")
+        video_type: "regular", "landmark", or "annotation"
+    
+    Returns:
+        Path to video file if found, None otherwise
+    """
+    # Check for cloud storage URL first (R2, S3, etc.)
+    cloud_storage_url = os.getenv("CLOUD_STORAGE_URL")
+    if cloud_storage_url:
+        # Cloud storage is configured - return None to trigger cloud fetch
+        # The endpoint will handle fetching from cloud
+        return None
+    
+    # Possible base directories (in order of preference)
+    base_dirs = []
+    
+    # For cloud deployment, check environment variable or default paths
+    if os.getenv("RENDER") or os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("DYNO") or os.getenv("PORT"):
+        # Cloud deployment - check /tmp/videos or environment variable
+        video_base = os.getenv("VIDEO_BASE_PATH", "/tmp/videos")
+        base_dirs.append(Path(video_base))
+        # Also check relative to project root
+        base_dirs.append(Path("/opt/render/project/src/videos"))
+    else:
+        # Local development - check relative to project root
+        # API is in SignSegmentationUI/, videos are in ../videos/
+        script_dir = Path(__file__).parent
+        project_root = script_dir.parent
+        base_dirs.append(project_root / "videos")
+        base_dirs.append(script_dir / "videos")
+        base_dirs.append(Path("videos"))
+    
+    # Build video paths based on type
+    video_paths = []
+    
+    if video_type == "landmark":
+        # Landmark videos: data/visualizations/{video_id}_all_frames/{video_id}_landmarks.mp4
+        for base in base_dirs:
+            video_paths.append(base.parent / "data" / "visualizations" / f"{video_id}_all_frames" / f"{video_id}_landmarks.mp4")
+    elif video_type == "annotation":
+        # Annotation videos: data/visualizations/annotation_videos_browser/{video_id}_annotation_guide.mp4
+        for base in base_dirs:
+            video_paths.append(base.parent / "data" / "visualizations" / "annotation_videos_browser" / f"{video_id}_annotation_guide.mp4")
+    else:
+        # Regular videos: videos/{video_id}.mp4
+        for base in base_dirs:
+            video_paths.append(base / f"{video_id}.mp4")
+    
+    # Try each path
+    for video_path in video_paths:
+        if video_path.exists() and video_path.is_file():
+            return video_path
+    
+    return None
+
+
+@app.get("/api/videos/{video_id}")
+def get_video(video_id: str):
+    """
+    Serve video file by video_id.
+    Tries GitHub Releases first, then cloud storage, then local files.
+    """
+    # GitHub Releases URL (primary source)
+    github_release_tag = os.getenv("GITHUB_RELEASE_TAG", "v1.0")
+    github_repo = os.getenv("GITHUB_REPO", "Bhumika158/SignSegmentationUI")
+    github_release_url = f"https://github.com/{github_repo}/releases/download/{github_release_tag}/{video_id}.mp4"
+    
+    # Check GitHub Releases first
+    try:
+        import requests
+        response = requests.head(github_release_url, timeout=5, allow_redirects=True)
+        if response.status_code == 200:
+            # Return redirect to GitHub Releases URL (browser will fetch directly)
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url=github_release_url, status_code=302)
+    except Exception as e:
+        print(f"GitHub Releases check failed: {e}")
+    
+    # Check for cloud storage URL (fallback)
+    cloud_storage_url = os.getenv("CLOUD_STORAGE_URL")
+    if cloud_storage_url:
+        try:
+            cloud_url = f"{cloud_storage_url}/videos/{video_id}.mp4"
+            response = requests.head(cloud_url, timeout=5)
+            if response.status_code == 200:
+                from fastapi.responses import RedirectResponse
+                return RedirectResponse(url=cloud_url, status_code=302)
+        except Exception as e:
+            print(f"Cloud storage fetch failed: {e}")
+    
+    # Try local regular video first
+    video_path = find_video_file(video_id, "regular")
+    
+    # If not found, try annotation video
+    if not video_path:
+        video_path = find_video_file(video_id, "annotation")
+    
+    if not video_path:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Video not found: {video_id}.mp4. Checked GitHub Releases, cloud storage, and local files."
+        )
+    
+    return FileResponse(
+        path=str(video_path),
+        media_type="video/mp4",
+        filename=f"{video_id}.mp4"
+    )
+
+
+@app.get("/api/videos/{video_id}/landmark")
+def get_landmark_video(video_id: str):
+    """Serve landmark video file (with overlaid landmarks)."""
+    # Try GitHub Releases first (for landmark videos, if they exist)
+    github_release_tag = os.getenv("GITHUB_RELEASE_TAG", "v1.0")
+    github_repo = os.getenv("GITHUB_REPO", "Bhumika158/SignSegmentationUI")
+    github_landmark_url = f"https://github.com/{github_repo}/releases/download/{github_release_tag}/{video_id}_landmarks.mp4"
+    
+    try:
+        import requests
+        response = requests.head(github_landmark_url, timeout=5, allow_redirects=True)
+        if response.status_code == 200:
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url=github_landmark_url, status_code=302)
+    except Exception:
+        pass
+    
+    # Check cloud storage (fallback)
+    cloud_storage_url = os.getenv("CLOUD_STORAGE_URL")
+    if cloud_storage_url:
+        try:
+            cloud_url = f"{cloud_storage_url}/videos/{video_id}_landmarks.mp4"
+            response = requests.head(cloud_url, timeout=5)
+            if response.status_code == 200:
+                from fastapi.responses import RedirectResponse
+                return RedirectResponse(url=cloud_url, status_code=302)
+        except Exception:
+            pass
+    
+    video_path = find_video_file(video_id, "landmark")
+    
+    if not video_path:
+        # Fallback to regular video from GitHub Releases
+        github_regular_url = f"https://github.com/{github_repo}/releases/download/{github_release_tag}/{video_id}.mp4"
+        try:
+            import requests
+            response = requests.head(github_regular_url, timeout=5, allow_redirects=True)
+            if response.status_code == 200:
+                from fastapi.responses import RedirectResponse
+                return RedirectResponse(url=github_regular_url, status_code=302)
+        except Exception:
+            pass
+        # Final fallback to local regular video
+        video_path = find_video_file(video_id, "regular")
+    
+    if not video_path:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Landmark video not found: {video_id}"
+        )
+    
+    return FileResponse(
+        path=str(video_path),
+        media_type="video/mp4",
+        filename=f"{video_id}_landmarks.mp4"
+    )
+
+
+@app.get("/api/videos/{video_id}/annotation")
+def get_annotation_video(video_id: str):
+    """Serve annotation video file (browser-compatible)."""
+    # Try GitHub Releases first (for annotation videos, if they exist)
+    github_release_tag = os.getenv("GITHUB_RELEASE_TAG", "v1.0")
+    github_repo = os.getenv("GITHUB_REPO", "Bhumika158/SignSegmentationUI")
+    github_annotation_url = f"https://github.com/{github_repo}/releases/download/{github_release_tag}/{video_id}_annotation_guide.mp4"
+    
+    try:
+        import requests
+        response = requests.head(github_annotation_url, timeout=5, allow_redirects=True)
+        if response.status_code == 200:
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url=github_annotation_url, status_code=302)
+    except Exception:
+        pass
+    
+    # Check cloud storage (fallback)
+    cloud_storage_url = os.getenv("CLOUD_STORAGE_URL")
+    if cloud_storage_url:
+        try:
+            cloud_url = f"{cloud_storage_url}/videos/{video_id}_annotation_guide.mp4"
+            response = requests.head(cloud_url, timeout=5)
+            if response.status_code == 200:
+                from fastapi.responses import RedirectResponse
+                return RedirectResponse(url=cloud_url, status_code=302)
+        except Exception:
+            pass
+    
+    video_path = find_video_file(video_id, "annotation")
+    
+    if not video_path:
+        # Fallback to regular video from GitHub Releases
+        github_regular_url = f"https://github.com/{github_repo}/releases/download/{github_release_tag}/{video_id}.mp4"
+        try:
+            import requests
+            response = requests.head(github_regular_url, timeout=5, allow_redirects=True)
+            if response.status_code == 200:
+                from fastapi.responses import RedirectResponse
+                return RedirectResponse(url=github_regular_url, status_code=302)
+        except Exception:
+            pass
+        # Final fallback to local regular video
+        video_path = find_video_file(video_id, "regular")
+    
+    if not video_path:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Annotation video not found: {video_id}"
+        )
+    
+    return FileResponse(
+        path=str(video_path),
+        media_type="video/mp4",
+        filename=f"{video_id}_annotation_guide.mp4"
+    )
 
 
 # Serve static files (HTML, etc.) - serve from project root

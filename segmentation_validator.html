@@ -1096,24 +1096,39 @@
             const logicText = currentVideo.notes || 'No specific notes provided. Please review the segments below.';
             document.getElementById('logicText').textContent = logicText;
 
-            // Load video - try browser-compatible annotation videos first, then regular videos
+            // Load video - try API endpoint first (which redirects to GitHub Releases), then local paths
             // Browser-compatible annotation videos are in annotation_videos_browser/ (H.264 codec)
             // These have frame numbers overlaid and match the annotation frame numbers exactly
             const video = document.getElementById('mainVideoPlayer');
-            // Try multiple paths for annotation videos
-            const videoBaseUrl = window.location.hostname.includes('render.com') || window.location.hostname.includes('github.io')
-                ? 'https://raw.githubusercontent.com/Bhumika158/SignSegmentationUI/main/'
-                : '';
             
-            const browserAnnotationPath = videoBaseUrl
-                ? `${videoBaseUrl}data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`
-                : `data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
-            const regularPath = videoBaseUrl
-                ? `${videoBaseUrl}videos/${videoId}.mp4`
-                : `videos/${videoId}.mp4`;
-            // Fallback paths
-            const fallbackAnnotationPath = `../data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
-            const fallbackRegularPath = `../videos/${videoId}.mp4`;
+            // Determine if we're on a deployed site (use API) or local (use local paths)
+            const isDeployed = window.location.hostname !== 'localhost' && 
+                               window.location.hostname !== '127.0.0.1' &&
+                               !window.location.hostname.includes('localhost');
+            
+            // GitHub Releases URL (videos are published there)
+            const githubReleaseTag = 'v1.0';
+            const githubRepo = 'Bhumika158/SignSegmentationUI';
+            const githubReleaseBase = `https://github.com/${githubRepo}/releases/download/${githubReleaseTag}`;
+            
+            // Build video paths - try API first for deployed sites (API redirects to GitHub Releases)
+            let browserAnnotationPath, regularPath, fallbackAnnotationPath, fallbackRegularPath;
+            
+            if (isDeployed && API_BASE_URL) {
+                // Use API endpoint for videos (API will redirect to GitHub Releases)
+                const apiRoot = API_BASE_URL.replace('/api', '');
+                browserAnnotationPath = `${apiRoot}/api/videos/${videoId}/annotation`;
+                regularPath = `${apiRoot}/api/videos/${videoId}`;
+                // Fallback to direct GitHub Releases URLs if API fails
+                fallbackAnnotationPath = `${githubReleaseBase}/${videoId}_annotation_guide.mp4`;
+                fallbackRegularPath = `${githubReleaseBase}/${videoId}.mp4`;
+            } else {
+                // Local development - try GitHub Releases first, then local paths
+                browserAnnotationPath = `${githubReleaseBase}/${videoId}_annotation_guide.mp4`;
+                regularPath = `${githubReleaseBase}/${videoId}.mp4`;
+                fallbackAnnotationPath = `data/visualizations/annotation_videos_browser/${videoId}_annotation_guide.mp4`;
+                fallbackRegularPath = `videos/${videoId}.mp4`;
+            }
             
             // Reset video state
             video.pause();
